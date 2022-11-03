@@ -3,11 +3,11 @@ import requests
 from datetime import timedelta
 import datetime
 import asyncio
-from kafka import KafkaProducer
-
+import confluent_kafka
+import json
 
 def getBikeRecords(limite=-1):
-    yesterday = (datetime.datetime.now() - timedelta(days=1)).strftime(
+    yesterday = (datetime.datetime.now() - timedelta(days=2)).strftime(
         "%Y-%m-%d %H:00:00"
     )
     print("call for time: " + yesterday)
@@ -68,8 +68,11 @@ async def simulateBikeStream(record, kafka_producer):
     if n_counter > 0:
         for i in range(n_counter):
             sleep_time = 3500 / n_counter
-            print(f"Bike {str(i)} / {n_counter} detected at {record['nom_compteur']}")
-            kafka_producer.send("velo", record["nom_compteur"].encode("utf-8"))
+            kafka_producer.produce(
+                "bike",
+                key=record["nom_compteur"],
+                value=json.dumps(record),
+            )
             await asyncio.sleep(sleep_time)
     return 0
 
@@ -79,9 +82,11 @@ async def simulateCarStream(record, kafka_producer):
         n_counter = int(record["q"])
         if n_counter > 0:
             for i in range(n_counter):
-                sleep_time = 3600 / n_counter
-                print(
-                    f"Car {str(i)} / {n_counter} detected at {record['libelle']} from {record['libelle_nd_amont']} to {record['libelle_nd_aval']} "
+                sleep_time = 3500 / n_counter
+                kafka_producer.produce(
+                    "car",
+                    key=record["libelle"],
+                    value=json.dumps(record),
                 )
                 await asyncio.sleep(sleep_time)
     return 0
@@ -89,11 +94,15 @@ async def simulateCarStream(record, kafka_producer):
 
 async def main():
     bike_records = getBikeRecords()
-    # car_records = getCarRecords()
+    car_records = getCarRecords()
     background_tasks = []
-    kafka_producer = KafkaProducer(bootstrap_servers="localhost:9092")
+    kafka_producer = confluent_kafka.Producer(
+        {"bootstrap.servers": "localhost:9092", "client.id": "producer"}
+    )
+    print("Sending bike records")
     bikeStream(bike_records, background_tasks, kafka_producer)
-    # carStream(car_records, background_tasks, kafka_producer)
+    print("Sending car records")
+    carStream(car_records, background_tasks, kafka_producer)
     res = await asyncio.gather(*background_tasks)
     return res
 

@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package com.codingharbour.protobuf;
+
+message Coordinates {
+    float lon = 1;
+    float lat = 2;
+}
+
+message BikeRecord {
+    string id_compteur = 1; 
+    string nom_compteur = 2;
+    string id = 3;
+    string name = 4;
+    Coordinates coord = 5;  // coordinates
+    string date = 6;
+}
+
+message CarRecord {
+    string id_compteur = 1;        // iu_ac
+    string nom_compteur = 2;       // libelle
+    string date = 3;               // t_1h
+    string etat_trafic = 4;        // etat_trafic
+    Coordinates coord = 5;  // geo_point_2d
+    string id compteur_amont = 6;  // iu_nd_amont
+    string nom_compteur_amont = 7; // libelle_nd_amont
+    string id_compteur_aval = 8;   // iu_nd_aval
+    string nom_compteur_aval = 9;  // libelle_nd_aval
+}
+
+
+{
+   "iu_ac": "4198",
+   "libelle": "Bd_Berthier",
+   "t_1h": "2022-11-02T10:00:00+00:00",
+   "etat_trafic": "Inconnu",
+   "iu_nd_amont": "2023",
+   "libelle_nd_amont": "Pont_SNCF",
+   "iu_nd_aval": "2250",
+   "libelle_nd_aval": "Bd_Berthier-Av_Pte_d'Asnieres",
+   "etat_barre": "Invalide",
+   "date_debut": "2005-01-01",
+   "date_fin": "2019-06-01",
+   "geo_point_2d": {
+      "lon": 2.3059988527590267,
+      "lat": 48.891119566714565
+   },
+   "geo_shape": {
+      "type": "Feature",
+      "geometry": {
+         "coordinates": [
+            [
+               2.30805481361402,
+               48.89211129074089
+            ],
+            [
+               2.303942891904034,
+               48.89012784268824
+            ]
+         ],
+         "type": "LineString"
+      },
+      "properties": {}
+   }
+}
+
+{
+   "id_compteur": "100006300-101006300",
+   "nom_compteur": "135 avenue Daumesnil SE-NO",
+    "date": "2022-11-01T10:00:00+00:00",
+   "id": "100006300",
+   "name": "135 avenue Daumesnil",
+   "url_photos_n1": "https://filer.eco-counter-tools.com/file/33/72900abae7cbd8648f613c39f98f2766804530fc2fd9004fcca1ac282a9b5c33/X2H18086316_20220803114717.jpg",
+   "coordinates": {
+      "lon": 2.383378,
+      "lat": 48.843435
+   },
+   "counter": "X2H18086316",
+}
