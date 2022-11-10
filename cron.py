@@ -10,6 +10,8 @@ from confluent_kafka.serialization import StringSerializer, SerializationContext
 import json
 import schema_pb2 as schema_pb2
 
+port_schema_registry = "8084"
+
 def getBikeRecords(limite=-1):
     yesterday = (datetime.datetime.now() - timedelta(days=2)).strftime(
         "%Y-%m-%d %H:00:00"
@@ -69,7 +71,7 @@ def carStream(car_records, background_tasks, kafka_producer):
 
 async def simulateBikeStream(record, kafka_producer):
     string_serializer = StringSerializer('utf8')
-    schema_registry_client = SchemaRegistryClient({'url': "http://localhost:8081"})
+    schema_registry_client = SchemaRegistryClient({'url': "http://localhost:"+port_schema_registry})
     protobuf_serializer_bike = ProtobufSerializer(
         schema_pb2.BikeRecord,
         schema_registry_client,
@@ -96,14 +98,14 @@ async def simulateBikeStream(record, kafka_producer):
                     key=string_serializer("bike","utf-8"),
                     value=protobuf_serializer_bike(bike_record, SerializationContext("bike", MessageField.VALUE))
                     )
-
+            # kafka_producer.poll(0)
             await asyncio.sleep(sleep_time)
     return 0
 
 
 async def simulateCarStream(record, kafka_producer):
     string_serializer = StringSerializer('utf8')
-    schema_registry_client = SchemaRegistryClient({'url': "http://localhost:8081"})
+    schema_registry_client = SchemaRegistryClient({'url': "http://localhost:"+port_schema_registry})
     protobuf_serializer_car = ProtobufSerializer(
         schema_pb2.CarRecord,
         schema_registry_client,
@@ -134,6 +136,7 @@ async def simulateCarStream(record, kafka_producer):
                         key=string_serializer("car","utf-8"),
                         value=protobuf_serializer_car(car_record, SerializationContext("car", MessageField.VALUE))
                         )
+                # kafka_producer.flush()
                 await asyncio.sleep(sleep_time)
     return 0
 
@@ -148,7 +151,7 @@ async def main():
     print("Sending bike records")
     bikeStream(bike_records, background_tasks, kafka_producer)
     print("Sending car records")
-    carStream(car_records, background_tasks, kafka_producer)
+    # carStream(car_records, background_tasks, kafka_producer)
     res = await asyncio.gather(*background_tasks)
     return res
 
