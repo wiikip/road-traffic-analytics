@@ -1,0 +1,57 @@
+version: "3.6"
+
+services:
+  nginx-proxy:
+    image: nginx
+    restart: always
+    environment:
+      DEFAULT_HOST: cs-road-traffic-analytics-dev.illuin-tech.com
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - conf:/etc/nginx/conf.d
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - dhparam:/etc/nginx/dhparam
+      - certs:/etc/nginx/certs:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    labels:
+      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: true
+
+  letsencrypt:
+    image: nginxproxy/acme-companion:2.2.1
+    restart: always
+    depends_on:
+      - nginx-proxy
+    volumes:
+      - conf:/etc/nginx/conf.d
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - dhparam:/etc/nginx/dhparam
+      - certs:/etc/nginx/certs:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - acme:/etc/acme.sh
+
+  # akhq:
+  #   image: tchiotludo/akhq:dev
+  #   depends_on:
+  #     - kafka
+  #     - cp-schema-registry
+  #   environment:
+  #     VIRTUAL_HOST: "{{ akhq_hostname }}"
+  #     VIRTUAL_PORT: 8080
+  #     SERVER_PORT: 8080
+  #     JVM_OPTS: "-Xms32M -Xmx64M"
+  #     LETSENCRYPT_HOST: "{{ akhq_hostname }}"
+  #     LETSENCRYPT_EMAIL: "{{ letsencrypt_email }}"
+  #   volumes:
+  #     - "{{ volume_path }}/akhq/application.yml:/app/application.yml"
+
+volumes:
+  conf:
+  vhost:
+  html:
+  dhparam:
+  certs:
+  acme:
