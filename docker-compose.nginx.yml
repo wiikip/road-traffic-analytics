@@ -1,0 +1,48 @@
+version: "3.6"
+
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /apps/docker-articles/nginx/vhost.d:/etc/nginx/vhost.d
+      - /apps/docker-articles/nginx/certs:/etc/nginx/certs:ro
+      - /apps/docker-articles/nginx/html:/usr/share/nginx/html
+    networks:
+      - ippon
+    labels:
+      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion:v1.5
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /apps/docker-articles/nginx/vhost.d:/etc/nginx/vhost.d
+      - /apps/docker-articles/nginx/certs:/etc/nginx/certs:rw
+      - /apps/docker-articles/nginx/html:/usr/share/nginx/html
+
+  # akhq:
+  #   image: tchiotludo/akhq:dev
+  #   depends_on:
+  #     - kafka
+  #     - cp-schema-registry
+  #   environment:
+  #     VIRTUAL_HOST: "{{ akhq_hostname }}"
+  #     VIRTUAL_PORT: 8080
+  #     SERVER_PORT: 8080
+  #     JVM_OPTS: "-Xms32M -Xmx64M"
+  #     LETSENCRYPT_HOST: "{{ akhq_hostname }}"
+  #     LETSENCRYPT_EMAIL: "{{ letsencrypt_email }}"
+  #   volumes:
+  #     - "{{ volume_path }}/akhq/application.yml:/app/application.yml"
+
+volumes:
+  conf:
+  vhost:
+  html:
+  dhparam:
+  certs:
+  acme:
