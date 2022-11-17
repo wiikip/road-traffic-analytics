@@ -95,8 +95,8 @@ async def simulateBikeStream(record, kafka_producer):
             )
 
             kafka_producer.produce(topic="bike",
-                    key=string_serializer("bike","utf-8"),
-                    value=protobuf_serializer_bike(bike_record, SerializationContext("bike", MessageField.VALUE))
+                    key=record["nom_compteur"],#string_serializer("bike","utf-8"),
+                    value=json.dumps(record)#protobuf_serializer_bike(bike_record, SerializationContext("bike", MessageField.VALUE))
                     )
             kafka_producer.poll(0)
             await asyncio.sleep(sleep_time)
@@ -133,8 +133,8 @@ async def simulateCarStream(record, kafka_producer):
                 )
 
                 kafka_producer.produce(topic="car",
-                        key=string_serializer("car","utf-8"),
-                        value=protobuf_serializer_car(car_record, SerializationContext("car", MessageField.VALUE))
+                        key=record["iu_ac"],#string_serializer("car","utf-8"),
+                        value=json.dumps(record)#protobuf_serializer_car(car_record, SerializationContext("car", MessageField.VALUE))
                         )
                 kafka_producer.poll(0)
                 await asyncio.sleep(sleep_time)
