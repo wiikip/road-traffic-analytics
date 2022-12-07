@@ -4,17 +4,43 @@
     "dataSchema": {
       "dataSource": "bike",
       "timestampSpec": {
-        "column": "date",
+        "column": "kafka.timestamp",
         "format": "auto"
       },
       "dimensionsSpec": {
         "dimensions": [
-          "id_compteur",
-          "nom_compteur",
-          "id",
-          "name",
-          "coord",
-          "date"
+          {
+            "type": "string",
+            "name": "kafka.timestamp"
+          },
+          {
+            "type": "string",
+            "name": "id_compteur"
+          },
+          {
+            "type": "string",
+            "name": "nom_compteur"
+          },
+          {
+            "type": "string",
+            "name": "id"
+          },
+          {
+            "type": "string",
+            "name": "name"
+          },
+          {
+            "type": "string",
+            "name": "coord.lon"
+          },
+          {
+            "type": "string",
+            "name": "coord.lat"
+          },
+          {
+            "type": "string",
+            "name": "date"
+          }
         ]
       },
       "metricsSpec": [],
@@ -30,9 +56,14 @@
       "reportParseExceptions": false
     },
     "ioConfig": {
+      "type": "kafka",
       "topic": "bike",
       "inputFormat": {
-        "type": "json"
+        "type": "kafka",
+        "timestampColumnName": "kafka.timestamp",
+        "valueFormat": {
+          "type": "json"
+        }
       },
       "replicas": 2,
       "taskDuration": "PT10M",
