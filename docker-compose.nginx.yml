@@ -110,10 +110,6 @@ services:
       - coordinator
     env_file:
       - environment
-    environment:
-      VIRTUAL_HOST: druid.cs-road-traffic-analytics-dev.illuin-tech.com
-      LETSENCRYPT_HOST: druid.cs-road-traffic-analytics-dev.illuin-tech.com
-      LETSENCRYPT_EMAIL: kevin.fairise@student-cs.fr
 
   broker:
     image: apache/druid:24.0.0
@@ -181,6 +177,10 @@ services:
       - router
     env_file:
       - environment
+    environment:
+      VIRTUAL_HOST: druid.cs-road-traffic-analytics-dev.illuin-tech.com
+      LETSENCRYPT_HOST: druid.cs-road-traffic-analytics-dev.illuin-tech.com
+      LETSENCRYPT_EMAIL: kevin.fairise@student-cs.fr
 volumes:
   conf:
   vhost:
