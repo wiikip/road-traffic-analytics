@@ -70,13 +70,6 @@
       "ioConfig": {
         "type": "kafka",
         "topic": "car",
-        // "inputFormat": {
-        //   "type": "kafka",
-        //   "timestampColumnName": "kafka.timestamp",
-        //   "valueFormat": {
-        //     "type": "json"
-        //   }
-        // },
         "inputFormat": {
           "type": "kafka",
           "timestampColumnName": "kafka.timestamp",
