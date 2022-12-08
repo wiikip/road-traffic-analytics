@@ -2,18 +2,14 @@ syntax = "proto3";
 
 package com.codingharbour.protobuf;
 
-message Coordinates {
-    float lon = 1;
-    float lat = 2;
-}
-
 message BikeRecord {
     string id_compteur = 1; 
     string nom_compteur = 2;
     string id = 3;
     string name = 4;
-    Coordinates coord = 5;  // coordinates
-    string date = 6;
+    float lat = 5;  // coordinates
+    float lon = 6;  // coordinates
+    string date = 7;
 }
 
 message CarRecord {
@@ -21,9 +17,10 @@ message CarRecord {
     string nom_compteur = 2;       // libelle
     string date = 3;               // t_1h
     string etat_trafic = 4;        // etat_trafic
-    Coordinates coord = 5;         // geo_point_2d
-    string compteur_amont = 6;  // iu_nd_amont
-    string nom_compteur_amont = 7; // libelle_nd_amont
-    string id_compteur_aval = 8;   // iu_nd_aval
-    string nom_compteur_aval = 9;  // libelle_nd_aval
+    float lat = 5;  // coordinates
+    float lon = 6;  // coordinates
+    string compteur_amont = 7;  // iu_nd_amont
+    string nom_compteur_amont = 8; // libelle_nd_amont
+    string id_compteur_aval = 9;   // iu_nd_aval
+    string nom_compteur_aval = 10;  // libelle_nd_aval
 }

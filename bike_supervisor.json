@@ -4,15 +4,11 @@
     "dataSchema": {
       "dataSource": "bike",
       "timestampSpec": {
-        "column": "kafka.timestamp",
+        "column": "date",
         "format": "auto"
       },
       "dimensionsSpec": {
         "dimensions": [
-          {
-            "type": "string",
-            "name": "kafka.timestamp"
-          },
           {
             "type": "string",
             "name": "id_compteur"
@@ -30,12 +26,12 @@
             "name": "name"
           },
           {
-            "type": "string",
-            "name": "coord.lon"
+            "type": "float",
+            "name": "lon"
           },
           {
-            "type": "string",
-            "name": "coord.lat"
+            "type": "float",
+            "name": "lat"
           },
           {
             "type": "string",
@@ -59,10 +55,10 @@
       "type": "kafka",
       "topic": "bike",
       "inputFormat": {
-        "type": "kafka",
-        "timestampColumnName": "kafka.timestamp",
-        "valueFormat": {
-          "type": "json"
+        "type": "protobuf",
+        "protoBytesDecoder": {
+          "type": "schema_registry",
+          "url": "http://schema-registry:8084"
         }
       },
       "replicas": 2,

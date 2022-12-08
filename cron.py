@@ -81,22 +81,24 @@ async def simulateBikeStream(record, kafka_producer):
     if n_counter > 0:
         for i in range(n_counter):
             sleep_time = 3500 / n_counter
-            coordinates = schema_pb2.Coordinates(
-                lat=record["coordinates"]["lat"], 
-                lon=record["coordinates"]["lon"]
-            )
+            # coordinates = schema_pb2.Coordinates(
+                
+            #     lat=record["coordinates"]["lat"], 
+            #     lon=record["coordinates"]["lon"]
+            # )
             bike_record = schema_pb2.BikeRecord(
                 id_compteur=record["id_compteur"],
                 id=record["id"],
                 nom_compteur=record["nom_compteur"],
                 date=record["date"],
                 name=record["name"],
-                coord=coordinates,
+                lat=record["coordinates"]["lat"],
+                lon=record["coordinates"]["lon"]
             )
 
             kafka_producer.produce(topic="bike",
                     key=record["nom_compteur"],#string_serializer("bike","utf-8"),
-                    value=json.dumps(record)#protobuf_serializer_bike(bike_record, SerializationContext("bike", MessageField.VALUE))
+                    value=protobuf_serializer_bike(bike_record, SerializationContext("bike", MessageField.VALUE))
                     )
             kafka_producer.poll(0)
             await asyncio.sleep(sleep_time)
@@ -116,25 +118,26 @@ async def simulateCarStream(record, kafka_producer):
         if n_counter > 0:
             for i in range(n_counter):
                 sleep_time = 3500 / n_counter
-                coordinates = schema_pb2.Coordinates(
-                    lat=record["geo_point_2d"]["lat"] if record["geo_point_2d"] != None else 0, 
-                    lon=record["geo_point_2d"]["lon"] if record["geo_point_2d"] != None else 0
-                )
+                # coordinates = schema_pb2.Coordinates(
+                #     lat=record["geo_point_2d"]["lat"] if record["geo_point_2d"] != None else 0, 
+                #     lon=record["geo_point_2d"]["lon"] if record["geo_point_2d"] != None else 0
+                # )
                 car_record = schema_pb2.CarRecord(
                     id_compteur=record["iu_ac"],
                     nom_compteur=record["libelle"],
                     date=record["t_1h"],
                     etat_trafic=record["etat_trafic"],
-                    coord=coordinates,
                     compteur_amont=record["iu_nd_amont"],
                     nom_compteur_amont=record["libelle_nd_amont"],
                     id_compteur_aval=record["iu_nd_aval"],
                     nom_compteur_aval=record["libelle_nd_aval"],
+                    lat=record["geo_point_2d"]["lat"] if record["geo_point_2d"] != None else 0, 
+                    lon=record["geo_point_2d"]["lon"] if record["geo_point_2d"] != None else 0
                 )
 
                 kafka_producer.produce(topic="car",
                         key=record["iu_ac"],#string_serializer("car","utf-8"),
-                        value=json.dumps(record)#protobuf_serializer_car(car_record, SerializationContext("car", MessageField.VALUE))
+                        value=protobuf_serializer_car(car_record, SerializationContext("car", MessageField.VALUE))
                         )
                 kafka_producer.poll(0)
                 await asyncio.sleep(sleep_time)
