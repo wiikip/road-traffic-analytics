@@ -9,6 +9,7 @@ from confluent_kafka.schema_registry.protobuf import ProtobufSerializer
 from confluent_kafka.serialization import StringSerializer, SerializationContext, MessageField
 import json
 import schema_pb2 as schema_pb2
+from datetime import datetime
 
 port_schema_registry = "8084"
 
@@ -86,11 +87,14 @@ async def simulateBikeStream(record, kafka_producer):
             #     lat=record["coordinates"]["lat"], 
             #     lon=record["coordinates"]["lon"]
             # )
+            date = (datetime.datetime.now() - timedelta(days=2)).strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
             bike_record = schema_pb2.BikeRecord(
                 id_compteur=record["id_compteur"],
                 id=record["id"],
                 nom_compteur=record["nom_compteur"],
-                date=record["date"],
+                date=date,#record["date"],
                 name=record["name"],
                 lat=record["coordinates"]["lat"],
                 lon=record["coordinates"]["lon"]
@@ -122,10 +126,13 @@ async def simulateCarStream(record, kafka_producer):
                 #     lat=record["geo_point_2d"]["lat"] if record["geo_point_2d"] != None else 0, 
                 #     lon=record["geo_point_2d"]["lon"] if record["geo_point_2d"] != None else 0
                 # )
+                date = (datetime.datetime.now() - timedelta(days=2)).strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
                 car_record = schema_pb2.CarRecord(
                     id_compteur=record["iu_ac"],
                     nom_compteur=record["libelle"],
-                    date=record["t_1h"],
+                    date=date,#record["t_1h"],
                     etat_trafic=record["etat_trafic"],
                     compteur_amont=record["iu_nd_amont"],
                     nom_compteur_amont=record["libelle_nd_amont"],
