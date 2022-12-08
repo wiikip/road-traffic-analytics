@@ -23,15 +23,6 @@ services:
       - /apps/docker-articles/nginx/html:/usr/share/nginx/html
     depends_on:
       - nginx-proxy
-  owncloud:
-    image: owncloud:10.0.3
-    hostname: owncloud
-    ports:
-      - "8080:80"
-    environment:
-      VIRTUAL_HOST: owncloud.cs-road-traffic-analytics-dev.illuin-tech.com
-      LETSENCRYPT_HOST: owncloud.cs-road-traffic-analytics-dev.illuin-tech.com
-      LETSENCRYPT_EMAIL: kevin.fairise@student-cs.fr
   akhq:
     image: tchiotludo/akhq
     environment:
@@ -43,17 +34,17 @@ services:
                 bootstrap.servers: "kafka:29092"
               schema-registry:
                 url: "http://schema-registry:8084"
-          security:
-            basic-auth:
-              - username: admin
-                password: "$2a$<hashed password>"
-                passwordHash: BCRYPT
-                groups:
-                - admin
-              - username: reader
-                password: "password"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
-                groups:
-                - reader
+          # security:
+          #   basic-auth:
+          #     - username: admin
+          #       password: "$2a$<hashed password>"
+          #       passwordHash: BCRYPT
+          #       groups:
+          #       - admin
+          #     - username: reader
+          #       password: "password"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+          #       groups:
+          #       - reader
       VIRTUAL_HOST: akhq.cs-road-traffic-analytics-dev.illuin-tech.com
       LETSENCRYPT_HOST: akhq.cs-road-traffic-analytics-dev.illuin-tech.com
       LETSENCRYPT_EMAIL: kevin.fairise@student-cs.fr
