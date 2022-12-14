@@ -93,7 +93,7 @@ services:
       - environment
 
   historical:
-    image: apache/druid:24.0.1
+    image: ./docker
     container_name: historical
     volumes:
       - druid_shared:/opt/shared
