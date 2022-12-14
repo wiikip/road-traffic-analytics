@@ -9,7 +9,6 @@ from confluent_kafka.schema_registry.protobuf import ProtobufSerializer
 from confluent_kafka.serialization import StringSerializer, SerializationContext, MessageField
 import json
 import schema_pb2 as schema_pb2
-from datetime import datetime
 
 port_schema_registry = "8084"
 

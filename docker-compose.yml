@@ -61,7 +61,7 @@ services:
       - POSTGRES_USER=druid
       - POSTGRES_DB=druid
   coordinator:
-    image: apache/druid:24.0.1
+    build: ./docker
     container_name: coordinator
     volumes:
       - druid_shared:/opt/shared
@@ -77,7 +77,7 @@ services:
       - environment
 
   broker:
-    image: apache/druid:24.0.1
+    build: ./docker
     container_name: broker
     volumes:
       - broker_var:/opt/druid/var
@@ -110,7 +110,7 @@ services:
       - environment
 
   middlemanager:
-    image: apache/druid:24.0.1
+    build: ./docker
     container_name: middlemanager
     volumes:
       - druid_shared:/opt/shared
@@ -128,7 +128,7 @@ services:
       - environment
 
   router:
-    image: apache/druid:24.0.1
+    build: ./docker
     container_name: router
     volumes:
       - router_var:/opt/druid/var
