@@ -1,92 +1,88 @@
 {
-    "type": "kafka",
-    "spec": {
-      "dataSchema": {
-        "dataSource": "car",
-        "timestampSpec": {
-          "column": "kafka.timestamp",
-          "format": "auto"
-        },
-        "dimensionsSpec": {
-          "dimensions": [
-            {
-              "type": "string",
-              "name": "kafka.timestamp"
-            },
-            {
-              "type": "string",
-              "name": "id_compteur"
-            },
-            {
-              "type": "string",
-              "name": "date"
-            },
-            {
-              "type": "string",
-              "name": "nom_compteur"
-            },
-            {
-              "type": "string",
-              "name": "etat_trafic"
-            },
-            {
-              "type": "string",
-              "name": "compteur_amont"
-            },
-            {
-              "type": "string",
-              "name": "nom_compteur_amont"
-            },
-            {
-              "type": "string",
-              "name": "compteur_aval"
-            },
-            {
-              "type": "string",
-              "name": "nom_compteur_aval"
-            },
-            {
-              "type": "float",
-              "name": "lon"
-            },
-            {
-              "type": "float",
-              "name": "lat"
-            }
-          ]
-        },
-        "metricsSpec": [],
-        "granularitySpec": {
-          "type": "uniform",
-          "segmentGranularity": "HOUR",
-          "queryGranularity": "NONE",
-          "rollup": false
-        }
+  "type": "kafka",
+  "spec": {
+    "dataSchema": {
+      "dataSource": "car",
+      "timestampSpec": {
+        "column": "date",
+        "format": "auto"
       },
-      "tuningConfig": {
-        "type": "kafka",
-        "reportParseExceptions": false
-      },
-      "ioConfig": {
-        "type": "kafka",
-        "topic": "car",
-        "inputFormat": {
-          "type": "kafka",
-          "timestampColumnName": "kafka.timestamp",
-          "valueFormat": {
-            "type": "protobuf",
-            "protoBytesDecoder": {
-              "type": "schema_registry",
-              "url": "http://localhost:8084"
-            }
+      "dimensionsSpec": {
+        "dimensions": [
+          {
+            "type": "string",
+            "name": "kafka.timestamp"
+          },
+          {
+            "type": "string",
+            "name": "idCompteur"
+          },
+          {
+            "type": "string",
+            "name": "date"
+          },
+          {
+            "type": "string",
+            "name": "nomCompteur"
+          },
+          {
+            "type": "string",
+            "name": "etatTrafic"
+          },
+          {
+            "type": "string",
+            "name": "compteurAmont"
+          },
+          {
+            "type": "string",
+            "name": "nomCompteurAmont"
+          },
+          {
+            "type": "string",
+            "name": "compteurAval"
+          },
+          {
+            "type": "string",
+            "name": "nomCompteurAval"
+          },
+          {
+            "type": "float",
+            "name": "lon"
+          },
+          {
+            "type": "float",
+            "name": "lat"
           }
-        },
-        "replicas": 2,
-        "taskDuration": "PT10M",
-        "completionTimeout": "PT20M",
-        "consumerProperties": {
-          "bootstrap.servers": "kafka:29092"
+        ]
+      },
+      "metricsSpec": [],
+      "granularitySpec": {
+        "type": "uniform",
+        "segmentGranularity": "HOUR",
+        "queryGranularity": "NONE",
+        "rollup": false
+      }
+    },
+    "tuningConfig": {
+      "type": "kafka",
+      "reportParseExceptions": false
+    },
+    "ioConfig": {
+      "type": "kafka",
+      "topic": "car",
+      "inputFormat": {
+        "type": "protobuf",
+        "protoBytesDecoder": {
+          "type": "schema_registry",
+          "url": "http://schema-registry:8084"
         }
+      },
+      "replicas": 2,
+      "taskDuration": "PT10M",
+      "completionTimeout": "PT20M",
+      "consumerProperties": {
+        "bootstrap.servers": "kafka:29092"
       }
     }
   }
+}
