@@ -58,25 +58,30 @@ def getCarRecords(limite=-1):
 
 
 def bikeStream(bike_records, background_tasks, kafka_producer):
-    for record in bike_records:
-        task = asyncio.ensure_future(simulateBikeStream(record, kafka_producer))
-        background_tasks.append(task)
-
-
-def carStream(car_records, background_tasks, kafka_producer):
-    for record in car_records:
-        task = asyncio.ensure_future(simulateCarStream(record, kafka_producer))
-        background_tasks.append(task)
-
-
-async def simulateBikeStream(record, kafka_producer):
-    string_serializer = StringSerializer('utf8')
     schema_registry_client = SchemaRegistryClient({'url': "http://localhost:"+port_schema_registry})
     protobuf_serializer_bike = ProtobufSerializer(
         schema_pb2.BikeRecord,
         schema_registry_client,
         {'use.deprecated.format': False}
     )
+    for record in bike_records:
+        task = asyncio.ensure_future(simulateBikeStream(record, kafka_producer, protobuf_serializer_bike))
+        background_tasks.append(task)
+
+
+def carStream(car_records, background_tasks, kafka_producer):
+    schema_registry_client = SchemaRegistryClient({'url': "http://localhost:"+port_schema_registry})
+    protobuf_serializer_car = ProtobufSerializer(
+        schema_pb2.CarRecord,
+        schema_registry_client,
+        {'use.deprecated.format': False}
+    )
+    for record in car_records:
+        task = asyncio.ensure_future(simulateCarStream(record, kafka_producer, protobuf_serializer_car))
+        background_tasks.append(task)
+
+
+async def simulateBikeStream(record, kafka_producer, protobuf_serializer_bike):
     n_counter = int(record["sum_counts"])
     if n_counter > 0:
         for i in range(n_counter):
@@ -108,14 +113,7 @@ async def simulateBikeStream(record, kafka_producer):
     return 0
 
 
-async def simulateCarStream(record, kafka_producer):
-    string_serializer = StringSerializer('utf8')
-    schema_registry_client = SchemaRegistryClient({'url': "http://localhost:"+port_schema_registry})
-    protobuf_serializer_car = ProtobufSerializer(
-        schema_pb2.CarRecord,
-        schema_registry_client,
-        {'use.deprecated.format': False}
-    )
+async def simulateCarStream(record, kafka_producer, protobuf_serializer_car):
     if record["q"]:
         n_counter = int(record["q"])
         if n_counter > 0:
