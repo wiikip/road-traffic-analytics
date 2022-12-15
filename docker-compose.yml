@@ -93,7 +93,7 @@ services:
       - environment
 
   historical:
-    image: ./docker
+    build: ./docker
     container_name: historical
     volumes:
       - druid_shared:/opt/shared
@@ -142,6 +142,75 @@ services:
       - router
     env_file:
       - environment
+
+  ## Superset services
+  redis:
+    image: redis:latest
+    container_name: superset_cache
+    volumes:
+      - redis:/data
+
+  db:
+    env_file: docker/superset/.env-non-dev
+    image: postgres:10
+    container_name: superset_db
+    volumes:
+      - db_home:/var/lib/postgresql/data
+
+  superset:
+    env_file: docker/superset/.env-non-dev
+    image: apache/superset:latest
+    container_name: superset_app
+    command: ["/app/docker/superset/docker-bootstrap.sh", "app-gunicorn"]
+    user: "root"
+    ports:
+      - 8088:8088
+    depends_on: 
+      - db
+      - redis
+    volumes: 
+      - ./docker/superset/:/app/docker/superset
+      - superset_home:/app/superset_home
+
+  superset-init:
+    image: apache/superset:latest
+    container_name: superset_init
+    command: ["/app/docker/superset/docker-init.sh"]
+    env_file: docker/superset/.env-non-dev
+    depends_on: 
+      - db
+      - redis
+    user: "root"
+    volumes: 
+      - ./docker/superset/:/app/docker/superset
+      - superset_home:/app/superset_home
+
+  superset-worker:
+    image: apache/superset:latest
+    container_name: superset_worker
+    command: ["/app/docker/superset/docker-bootstrap.sh", "worker"]
+    env_file: docker/superset/.env-non-dev
+    depends_on: 
+      - db
+      - redis
+    user: "root"
+    volumes: 
+      - ./docker/superset/:/app/docker/superset
+      - superset_home:/app/superset_home
+
+  superset-worker-beat:
+    image: apache/superset:latest
+    container_name: superset_worker_beat
+    command: ["/app/docker/superset/docker-bootstrap.sh", "beat"]
+    env_file: docker/superset/.env-non-dev
+    depends_on: 
+      - db
+      - redis
+    user: "root"
+    volumes: 
+      - ./docker/superset/:/app/docker/superset
+      - superset_home:/app/superset_home
+  
 volumes:
   zookeeper_data:
     driver: local
@@ -154,3 +223,9 @@ volumes:
   coordinator_var: {}
   router_var: {}
   druid_shared: {}
+  superset_home:
+    external: false
+  db_home:
+    external: false
+  redis:
+    external: false
