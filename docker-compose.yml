@@ -180,7 +180,7 @@ services:
       - db
       - redis
     volumes: 
-      - ./docker:/app/docker
+      - ./docker/superset:/app/docker
       - superset_home:/app/superset_home
 
   superset-init:
@@ -193,7 +193,7 @@ services:
       - redis
     user: "root"
     volumes: 
-      - ./docker:/app/docker
+      - ./docker/superset:/app/docker
       - superset_home:/app/superset_home
 
   superset-worker:
@@ -206,7 +206,7 @@ services:
       - redis
     user: "root"
     volumes: 
-      - ./docker:/app/docker
+      - ./docker/superset:/app/docker
       - superset_home:/app/superset_home
 
   superset-worker-beat:
@@ -219,7 +219,7 @@ services:
       - redis
     user: "root"
     volumes: 
-      - ./docker:/app/docker
+      - ./docker/superset:/app/docker
       - superset_home:/app/superset_home
   
 volumes:
