@@ -28,23 +28,23 @@ services:
     environment:
       AKHQ_CONFIGURATION: |
         akhq:
+          security:
+            default-group: no-roles
+            basic-auth:
+              - username: admin
+                password: "$$2a$$12$$jy2HIgMblEjqBxv.TYWWAegSjtXZeDJiez8.bOObMLhD18LfEuQU2"
+                passwordHash: BCRYPT
+                groups:
+                - admin
           connections:
             docker-kafka-server:
               properties:
                 bootstrap.servers: "kafka:29092"
               schema-registry:
                 url: "http://schema-registry:8084"
-          # security:
-          #   basic-auth:
-          #     - username: admin
-          #       password: "$2a$<hashed password>"
-          #       passwordHash: BCRYPT
-          #       groups:
-          #       - admin
-          #     - username: reader
-          #       password: "password"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
-          #       groups:
-          #       - reader
+        micronaut:
+          security:
+            enabled: true
       VIRTUAL_HOST: akhq.cs-road-traffic-analytics-dev.illuin-tech.com
       LETSENCRYPT_HOST: akhq.cs-road-traffic-analytics-dev.illuin-tech.com
       LETSENCRYPT_EMAIL: kevin.fairise@student-cs.fr

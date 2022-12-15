@@ -5,12 +5,23 @@ services:
     environment:
       AKHQ_CONFIGURATION: |
         akhq:
+          security:
+            default-group: no-roles
+            basic-auth:
+              - username: admin
+                password: "$$2a$$12$$jy2HIgMblEjqBxv.TYWWAegSjtXZeDJiez8.bOObMLhD18LfEuQU2"
+                passwordHash: BCRYPT
+                groups:
+                - admin
           connections:
             docker-kafka-server:
               properties:
                 bootstrap.servers: "kafka:29092"
               schema-registry:
                 url: "http://schema-registry:8084"
+        micronaut:
+          security:
+            enabled: true
     ports:
       - 9000:8080
     links:
