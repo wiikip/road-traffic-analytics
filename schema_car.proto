@@ -2,16 +2,6 @@ syntax = "proto3";
 
 package com.codingharbour.protobuf;
 
-message BikeRecord {
-    string id_compteur = 1; 
-    string nom_compteur = 2;
-    string id = 3;
-    string name = 4;
-    float lat = 5;  // coordinates
-    float lon = 6;  // coordinates
-    string date = 7;
-}
-
 message CarRecord {
     string id_compteur = 1;        // iu_ac
     string nom_compteur = 2;       // libelle

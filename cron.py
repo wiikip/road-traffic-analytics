@@ -6,9 +6,11 @@ import asyncio
 import confluent_kafka
 from confluent_kafka.schema_registry import SchemaRegistryClient
 from confluent_kafka.schema_registry.protobuf import ProtobufSerializer
-from confluent_kafka.serialization import StringSerializer, SerializationContext, MessageField
-import json
-import schema_pb2 as schema_pb2
+from confluent_kafka.serialization import SerializationContext, MessageField
+import schema_car_pb2 as schema_car_pb2
+import schema_bike_pb2 as schema_bike_pb2
+
+
 
 port_schema_registry = "8084"
 
@@ -60,7 +62,7 @@ def getCarRecords(limite=-1):
 def bikeStream(bike_records, background_tasks, kafka_producer):
     schema_registry_client = SchemaRegistryClient({'url': "http://localhost:"+port_schema_registry})
     protobuf_serializer_bike = ProtobufSerializer(
-        schema_pb2.BikeRecord,
+        schema_bike_pb2.BikeRecord,
         schema_registry_client,
         {'use.deprecated.format': False}
     )
@@ -72,7 +74,7 @@ def bikeStream(bike_records, background_tasks, kafka_producer):
 def carStream(car_records, background_tasks, kafka_producer):
     schema_registry_client = SchemaRegistryClient({'url': "http://localhost:"+port_schema_registry})
     protobuf_serializer_car = ProtobufSerializer(
-        schema_pb2.CarRecord,
+        schema_car_pb2.CarRecord,
         schema_registry_client,
         {'use.deprecated.format': False}
     )
@@ -86,15 +88,10 @@ async def simulateBikeStream(record, kafka_producer, protobuf_serializer_bike):
     if n_counter > 0:
         for i in range(n_counter):
             sleep_time = 3500 / n_counter
-            # coordinates = schema_pb2.Coordinates(
-                
-            #     lat=record["coordinates"]["lat"], 
-            #     lon=record["coordinates"]["lon"]
-            # )
             date = (datetime.datetime.now() - timedelta(days=2)).strftime(
                     "%Y-%m-%d %H:%M:%S"
                 )
-            bike_record = schema_pb2.BikeRecord(
+            bike_record = schema_bike_pb2.BikeRecord(
                 id_compteur=record["id_compteur"],
                 id=record["id"],
                 nom_compteur=record["nom_compteur"],
@@ -105,7 +102,7 @@ async def simulateBikeStream(record, kafka_producer, protobuf_serializer_bike):
             )
 
             kafka_producer.produce(topic="bike",
-                    key=record["nom_compteur"],#string_serializer("bike","utf-8"),
+                    key=record["nom_compteur"],
                     value=protobuf_serializer_bike(bike_record, SerializationContext("bike", MessageField.VALUE))
                     )
             kafka_producer.poll(0)
@@ -119,14 +116,10 @@ async def simulateCarStream(record, kafka_producer, protobuf_serializer_car):
         if n_counter > 0:
             for i in range(n_counter):
                 sleep_time = 3500 / n_counter
-                # coordinates = schema_pb2.Coordinates(
-                #     lat=record["geo_point_2d"]["lat"] if record["geo_point_2d"] != None else 0, 
-                #     lon=record["geo_point_2d"]["lon"] if record["geo_point_2d"] != None else 0
-                # )
                 date = (datetime.datetime.now() - timedelta(days=2)).strftime(
                     "%Y-%m-%d %H:%M:%S"
                 )
-                car_record = schema_pb2.CarRecord(
+                car_record = schema_car_pb2.CarRecord(
                     id_compteur=record["iu_ac"],
                     nom_compteur=record["libelle"],
                     date=date,#record["t_1h"],
@@ -140,7 +133,7 @@ async def simulateCarStream(record, kafka_producer, protobuf_serializer_car):
                 )
 
                 kafka_producer.produce(topic="car",
-                        key=record["iu_ac"],#string_serializer("car","utf-8"),
+                        key=record["iu_ac"],
                         value=protobuf_serializer_car(car_record, SerializationContext("car", MessageField.VALUE))
                         )
                 kafka_producer.poll(0)

@@ -11,10 +11,6 @@
         "dimensions": [
           {
             "type": "string",
-            "name": "kafka.timestamp"
-          },
-          {
-            "type": "string",
             "name": "idCompteur"
           },
           {
@@ -39,7 +35,7 @@
           },
           {
             "type": "string",
-            "name": "compteurAval"
+            "name": "idCompteurAval"
           },
           {
             "type": "string",

@@ -1,27 +1,0 @@
-
-·
-schema.protocom.codingharbour.protobuf"¬
-
-BikeRecord
-id_compteur (	R
-idCompteur!
-nom_compteur (	RnomCompteur
-id (	Rid
-name (	Rname
-lat (Rlat
-lon (Rlon
-date (	Rdate"Ó
-	CarRecord
-id_compteur (	R
-idCompteur!
-nom_compteur (	RnomCompteur
-date (	Rdate
-etat_trafic (	R
-etatTrafic
-lat (Rlat
-lon (Rlon%
-compteur_amont (	RcompteurAmont,
-nom_compteur_amont (	RnomCompteurAmont(
-id_compteur_aval	 (	RidCompteurAval*
-nom_compteur_aval
- (	RnomCompteurAvalbproto3
