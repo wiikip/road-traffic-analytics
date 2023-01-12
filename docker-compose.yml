@@ -8,9 +8,8 @@ services:
           security:
             default-group: no-roles
             basic-auth:
-              - username: admin
-                password: "$$2a$$12$$jy2HIgMblEjqBxv.TYWWAegSjtXZeDJiez8.bOObMLhD18LfEuQU2"
-                passwordHash: BCRYPT
+              - username: ${AKHQ_USER}
+                password: ${AKHQ_PASSWORD_HASH}
                 groups:
                 - admin
           connections:
@@ -48,6 +47,23 @@ services:
       - ALLOW_PLAINTEXT_LISTENER=yes
     depends_on:
       - zookeeper
+  # init-kafka:
+  #   image: "bitnami/kafka:3.3"
+  #   depends_on:
+  #     - kafka
+  #   entrypoint: [ '/bin/sh', '-c' ]
+  #   command: |
+  #     "
+  #     # blocks until kafka is reachable
+  #     kafka-topics --bootstrap-server kafka:9092 --list
+
+  #     echo -e 'Creating kafka topics'
+  #     kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic car --replication-factor 1 --partitions 1
+  #     kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic bike --replication-factor 1 --partitions 1
+
+  #     echo -e 'Successfully created the following topics:'
+  #     kafka-topics --bootstrap-server kafka:9092 --list
+  #     "
   schema-registry:
     image: "confluentinc/cp-schema-registry"
     ports:
@@ -61,6 +77,7 @@ services:
     depends_on:
       - zookeeper
       - kafka
+    restart: on-failure
   ## Druid services
   postgres:
     container_name: postgres
@@ -85,8 +102,9 @@ services:
     command:
       - coordinator
     env_file:
-      - environment
-
+      - .env-druid
+    environment:
+      - druid_auth_authenticator_MyBasicMetadataAuthenticator_initialAdminPassword=${DRUID_PASSWORD}
   broker:
     build: ./docker
     container_name: broker
@@ -101,7 +119,9 @@ services:
     command:
       - broker
     env_file:
-      - environment
+      - .env-druid
+    environment:
+      - druid_auth_authenticator_MyBasicMetadataAuthenticator_initialAdminPassword=${DRUID_PASSWORD}
 
   historical:
     build: ./docker
@@ -118,7 +138,9 @@ services:
     command:
       - historical
     env_file:
-      - environment
+      - .env-druid
+    environment:
+    - druid_auth_authenticator_MyBasicMetadataAuthenticator_initialAdminPassword=${DRUID_PASSWORD}
 
   middlemanager:
     build: ./docker
@@ -136,7 +158,9 @@ services:
     command:
       - middleManager
     env_file:
-      - environment
+      - .env-druid
+    environment:
+      - druid_auth_authenticator_MyBasicMetadataAuthenticator_initialAdminPassword=${DRUID_PASSWORD}
 
   router:
     build: ./docker
@@ -152,7 +176,9 @@ services:
     command:
       - router
     env_file:
-      - environment
+      - .env-druid
+    environment:
+      - druid_auth_authenticator_MyBasicMetadataAuthenticator_initialAdminPassword=${DRUID_PASSWORD}
 
   ## Superset services
   redis:
@@ -179,7 +205,7 @@ services:
     depends_on: 
       - db
       - redis
-    volumes: 
+    volumes:
       - ./docker/superset:/app/docker
       - superset_home:/app/superset_home
 
@@ -195,6 +221,8 @@ services:
     volumes: 
       - ./docker/superset:/app/docker
       - superset_home:/app/superset_home
+    environment:
+      - ADMIN_PASSWORD=${SUPERSET_PASSWORD}
 
   superset-worker:
     image: apache/superset:latest

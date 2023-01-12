@@ -31,7 +31,7 @@ services:
           security:
             default-group: no-roles
             basic-auth:
-              - username: admin
+              - username: ${AKHQ_USER}
                 password: "$$2a$$12$$jy2HIgMblEjqBxv.TYWWAegSjtXZeDJiez8.bOObMLhD18LfEuQU2"
                 passwordHash: BCRYPT
                 groups:
@@ -111,7 +111,7 @@ services:
     command:
       - coordinator
     env_file:
-      - environment
+      - .env-druid
 
   broker:
     build: ./docker
@@ -127,7 +127,7 @@ services:
     command:
       - broker
     env_file:
-      - environment
+      - .env-druid
 
   historical:
     build: ./docker
@@ -144,7 +144,7 @@ services:
     command:
       - historical
     env_file:
-      - environment
+      - .env-druid
 
   middlemanager:
     build: ./docker
@@ -162,7 +162,7 @@ services:
     command:
       - middleManager
     env_file:
-      - environment
+      - .env-druid
 
   router:
     build: ./docker
@@ -178,7 +178,7 @@ services:
     command:
       - router
     env_file:
-      - environment
+      - .env-druid
     environment:
       VIRTUAL_HOST: druid.cs-road-traffic-analytics-dev.illuin-tech.com
       LETSENCRYPT_HOST: druid.cs-road-traffic-analytics-dev.illuin-tech.com

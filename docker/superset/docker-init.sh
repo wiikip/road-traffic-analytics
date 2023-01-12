@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 set -e
-
 #
 # Always install local overrides first
 #
@@ -37,7 +36,6 @@ Init Step ${1}/${STEP_CNT} [${2}] -- ${3}
 
 EOF
 }
-ADMIN_PASSWORD="admin"
 # If Cypress run – overwrite the password for admin and export env variables
 if [ "$CYPRESS_CONFIG" == "true" ]; then
     ADMIN_PASSWORD="general"
