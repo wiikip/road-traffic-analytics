@@ -1,5 +1,6 @@
 import re
 import requests
+import sys
 from datetime import timedelta
 import datetime
 import asyncio
@@ -13,9 +14,10 @@ import schema_bike_pb2 as schema_bike_pb2
 
 
 port_schema_registry = "8084"
+day = 1 #how many days ago do we take the data?
 
 def getBikeRecords(limite=-1):
-    yesterday = (datetime.datetime.now() - timedelta(days=2)).strftime(
+    yesterday = (datetime.datetime.now() - timedelta(days=day)).strftime(
         "%Y-%m-%d %H:00:00"
     )
     print("call for time: " + yesterday)
@@ -37,7 +39,7 @@ def getBikeRecords(limite=-1):
 
 
 def getCarRecords(limite=-1):
-    yesterday = (datetime.datetime.now() - timedelta(days=1)).strftime(
+    yesterday = (datetime.datetime.now() - timedelta(days=day)).strftime(
         "%Y-%m-%d %H:00:00"
     )
     print("call for time: " + yesterday)
@@ -84,11 +86,14 @@ def carStream(car_records, background_tasks, kafka_producer):
 
 
 async def simulateBikeStream(record, kafka_producer, protobuf_serializer_bike):
-    n_counter = int(record["sum_counts"])
+    n_total_counter = int(record["sum_counts"])
+    nb_seconds = 3600 - datetime.datetime.now().minute * 60 - datetime.datetime.now().second
+    percentage_records = nb_seconds / 3600
+    n_counter = round(n_total_counter * percentage_records)
     if n_counter > 0:
-        for i in range(n_counter):
-            sleep_time = 3500 / n_counter
-            date = (datetime.datetime.now() - timedelta(days=2)).strftime(
+        for _ in range(n_counter):
+            sleep_time = nb_seconds / n_counter
+            date = (datetime.datetime.now() - timedelta(days=day)).strftime(
                     "%Y-%m-%d %H:%M:%S"
                 )
             bike_record = schema_bike_pb2.BikeRecord(
@@ -112,11 +117,14 @@ async def simulateBikeStream(record, kafka_producer, protobuf_serializer_bike):
 
 async def simulateCarStream(record, kafka_producer, protobuf_serializer_car):
     if record["q"]:
-        n_counter = int(record["q"])
+        n_total_counter = int(record["q"])
+        nb_seconds = 3600 - datetime.datetime.now().minute * 60 - datetime.datetime.now().second
+        percentage_records = nb_seconds / 3600
+        n_counter = round(n_total_counter * percentage_records)
         if n_counter > 0:
-            for i in range(n_counter):
-                sleep_time = 3500 / n_counter
-                date = (datetime.datetime.now() - timedelta(days=2)).strftime(
+            for _ in range(n_counter):
+                sleep_time = nb_seconds / n_counter
+                date = (datetime.datetime.now() - timedelta(days=day)).strftime(
                     "%Y-%m-%d %H:%M:%S"
                 )
                 car_record = schema_car_pb2.CarRecord(

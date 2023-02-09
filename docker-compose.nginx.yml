@@ -32,7 +32,7 @@ services:
             default-group: no-roles
             basic-auth:
               - username: ${AKHQ_USER}
-                password: "$$2a$$12$$jy2HIgMblEjqBxv.TYWWAegSjtXZeDJiez8.bOObMLhD18LfEuQU2"
+                password: $$2a$$12$$jy2HIgMblEjqBxv.TYWWAegSjtXZeDJiez8.bOObMLhD18LfEuQU2
                 passwordHash: BCRYPT
                 groups:
                 - admin
@@ -201,14 +201,14 @@ services:
     env_file: .env-superset
     image: apache/superset:latest
     container_name: superset_app
-    command: ["/app/docker/docker-bootstrap.sh", "app-gunicorn"]
+    command: [ "/app/docker/docker-bootstrap.sh", "app-gunicorn" ]
     user: "root"
     ports:
       - 8088:8088
-    depends_on: 
+    depends_on:
       - db
       - redis
-    volumes: 
+    volumes:
       - ./docker/superset:/app/docker
       - superset_home:/app/superset_home
     environment:
@@ -219,39 +219,39 @@ services:
   superset-init:
     image: apache/superset:latest
     container_name: superset_init
-    command: ["/app/docker/docker-init.sh"]
+    command: [ "/app/docker/docker-init.sh" ]
     env_file: .env-superset
-    depends_on: 
+    depends_on:
       - db
       - redis
     user: "root"
-    volumes: 
+    volumes:
       - ./docker/superset:/app/docker
       - superset_home:/app/superset_home
 
   superset-worker:
     image: apache/superset:latest
     container_name: superset_worker
-    command: ["/app/docker/docker-bootstrap.sh", "worker"]
+    command: [ "/app/docker/docker-bootstrap.sh", "worker" ]
     env_file: .env-superset
-    depends_on: 
+    depends_on:
       - db
       - redis
     user: "root"
-    volumes: 
+    volumes:
       - ./docker/superset:/app/docker
       - superset_home:/app/superset_home
 
   superset-worker-beat:
     image: apache/superset:latest
     container_name: superset_worker_beat
-    command: ["/app/docker/docker-bootstrap.sh", "beat"]
+    command: [ "/app/docker/docker-bootstrap.sh", "beat" ]
     env_file: .env-superset
-    depends_on: 
+    depends_on:
       - db
       - redis
     user: "root"
-    volumes: 
+    volumes:
       - ./docker/superset:/app/docker
       - superset_home:/app/superset_home
 volumes:

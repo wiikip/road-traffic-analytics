@@ -12,6 +12,9 @@ superset_dataset_url = superset_base_url + "api/v1/dataset/"
 druid_router_base_url = "http://localhost:8888/"
 druid_datasources_url = druid_router_base_url + "druid/v2/datasources"
 
+charts_directory = "./charts"
+superset_chart_import_url = superset_base_url + "api/v1/chart/import/"
+
 SUPERSET_USER = "admin"
 SUPERSET_PASSWORD = os.getenv("SUPERSET_PASSWORD")
 SUPERSET_USER_IN_DRUID = os.getenv("SUPERSET_USER_IN_DRUID")
@@ -47,6 +50,7 @@ def create_db_connection(session, access_token, crsf_token):
       "expose_in_sqllab": True,
       "sqlalchemy_uri": sqlalchemy_uri
     }
+    print(data_out)
     headers = {
         'Referrer': superset_login_url,
         'X-CSRFToken': crsf_token,
@@ -96,7 +100,32 @@ def wait_druid_datasources_to_create_datasets(superset_session, access_token, cr
             bike_dataset_created = True
 
 
+def import_charts(superset_session, access_token, crsf_token):
+    for filename in os.listdir(charts_directory):
+        f = os.path.join(charts_directory, filename)
+        if f.split('.')[-1] == 'zip':
+            print("Importing export file ", f, "...")
+            data_out = {
+                "overwrite": "true",
+                "passwords": json.dumps({"databases/Apache_druid.yaml": SUPERSET_PASSWORD_IN_DRUID})
+            }
+            files = {
+                'formData': ( filename, open(f, 'rb'), 'application/json')
+            }
+            headers = {
+                'Referrer': superset_login_url,
+                'X-CSRFToken': crsf_token,
+                "Authorization": "Bearer " + access_token,
+                'accept': 'application/json'
+            }
+            response = superset_session.post(url=superset_chart_import_url, headers=headers, files=files, data=data_out)
+            response.raise_for_status()
+            if json.loads(response.text)["message"] == "OK":
+                print("Export file ", f, " successfully imported")
+
+
 def deploy_superset():
+    print("Defined env vars: SUPERSET_USER ", SUPERSET_USER, " SUPERSET_PASSWORD ", SUPERSET_PASSWORD, " SUPERSET_USER_IN_DRUID ", SUPERSET_USER_IN_DRUID, " SUPERSET_PASSWORD_IN_DRUID ", SUPERSET_PASSWORD_IN_DRUID, " DRUID_USER ", DRUID_USER, " DRUID_PASSWORD ", DRUID_PASSWORD)
     superset_session = requests.session()
     access_token = get_access_token(superset_session)
     crsf_token = get_crsf_token(superset_session, access_token)
@@ -105,6 +134,9 @@ def deploy_superset():
     print("Superset database created with id", database_id)
     
     wait_druid_datasources_to_create_datasets(superset_session, access_token, crsf_token, database_id)
+
+    print("Import charts")
+    import_charts(superset_session, access_token, crsf_token)
 
 
 if __name__ == "__main__":

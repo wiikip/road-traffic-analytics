@@ -130,3 +130,7 @@ dmypy.json
 
 # Config file
 .env.config
+
+.vscode/
+
+**/.DS_Store

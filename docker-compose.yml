@@ -32,6 +32,7 @@ services:
       - "2181:2181"
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
+      - ZOO_4LW_COMMANDS_WHITELIST=dump
   kafka:
     image: "bitnami/kafka:3.3"
     ports:
@@ -140,7 +141,7 @@ services:
     env_file:
       - .env-druid
     environment:
-    - druid_auth_authenticator_MyBasicMetadataAuthenticator_initialAdminPassword=${DRUID_PASSWORD}
+      - druid_auth_authenticator_MyBasicMetadataAuthenticator_initialAdminPassword=${DRUID_PASSWORD}
 
   middlemanager:
     build: ./docker
@@ -198,11 +199,11 @@ services:
     env_file: .env-superset
     image: apache/superset:latest
     container_name: superset_app
-    command: ["/app/docker/docker-bootstrap.sh", "app-gunicorn"]
+    command: [ "/app/docker/docker-bootstrap.sh", "app-gunicorn" ]
     user: "root"
     ports:
       - 8088:8088
-    depends_on: 
+    depends_on:
       - db
       - redis
     volumes:
@@ -212,13 +213,13 @@ services:
   superset-init:
     image: apache/superset:latest
     container_name: superset_init
-    command: ["/app/docker/docker-init.sh"]
+    command: [ "/app/docker/docker-init.sh" ]
     env_file: .env-superset
-    depends_on: 
+    depends_on:
       - db
       - redis
     user: "root"
-    volumes: 
+    volumes:
       - ./docker/superset:/app/docker
       - superset_home:/app/superset_home
     environment:
@@ -227,29 +228,29 @@ services:
   superset-worker:
     image: apache/superset:latest
     container_name: superset_worker
-    command: ["/app/docker/docker-bootstrap.sh", "worker"]
+    command: [ "/app/docker/docker-bootstrap.sh", "worker" ]
     env_file: .env-superset
-    depends_on: 
+    depends_on:
       - db
       - redis
     user: "root"
-    volumes: 
+    volumes:
       - ./docker/superset:/app/docker
       - superset_home:/app/superset_home
 
   superset-worker-beat:
     image: apache/superset:latest
     container_name: superset_worker_beat
-    command: ["/app/docker/docker-bootstrap.sh", "beat"]
+    command: [ "/app/docker/docker-bootstrap.sh", "beat" ]
     env_file: .env-superset
-    depends_on: 
+    depends_on:
       - db
       - redis
     user: "root"
-    volumes: 
+    volumes:
       - ./docker/superset:/app/docker
       - superset_home:/app/superset_home
-  
+
 volumes:
   zookeeper_data:
     driver: local
