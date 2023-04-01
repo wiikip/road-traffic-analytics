@@ -1,5 +1,32 @@
 version: "3"
 services:
+  cron:
+    # Build ./cron/Dockerfile into python_scripts
+    build: ./python_scripts
+    image: python_scripts
+    depends_on:
+      - router
+      - middlemanager
+      - historical
+    environment:
+      COORDINATOR_URL: coordinator:8081
+      KAFKA_URL: kafka:29092
+      SCHEMA_HOST: http://schema-registry
+    # Run cron.sh
+    command: ./cron.sh
+
+  datasources:
+    # Reuse: python_scripts
+    image: python_scripts
+    depends_on:
+      - cron
+    environment:
+      COORDINATOR_URL: coordinator:8081
+      KAFKA_URL: kafka:29092
+      SCHEMA_HOST: http://schema-registry
+    # Run datasources.sh
+    command: ./datasources.sh
+
   akhq:
     image: tchiotludo/akhq
     environment:
