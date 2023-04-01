@@ -1,3 +1,4 @@
+import os
 import re
 import requests
 import sys
@@ -12,7 +13,8 @@ import schema_car_pb2 as schema_car_pb2
 import schema_bike_pb2 as schema_bike_pb2
 
 
-
+kafka_url = os.getenv("KAFKA_URL", "localhost:9092")
+port_schema_host = os.getenv("SCHEMA_HOST", "http://localhost")
 port_schema_registry = "8084"
 day = 1 #how many days ago do we take the data?
 
@@ -62,7 +64,7 @@ def getCarRecords(limite=-1):
 
 
 def bikeStream(bike_records, background_tasks, kafka_producer):
-    schema_registry_client = SchemaRegistryClient({'url': "http://localhost:"+port_schema_registry})
+    schema_registry_client = SchemaRegistryClient({'url': f"{port_schema_host}:{port_schema_registry}"})
     protobuf_serializer_bike = ProtobufSerializer(
         schema_bike_pb2.BikeRecord,
         schema_registry_client,
@@ -74,7 +76,7 @@ def bikeStream(bike_records, background_tasks, kafka_producer):
 
 
 def carStream(car_records, background_tasks, kafka_producer):
-    schema_registry_client = SchemaRegistryClient({'url': "http://localhost:"+port_schema_registry})
+    schema_registry_client = SchemaRegistryClient({'url': f"{port_schema_host}:{port_schema_registry}"})
     protobuf_serializer_car = ProtobufSerializer(
         schema_car_pb2.CarRecord,
         schema_registry_client,
@@ -153,8 +155,9 @@ async def main():
     bike_records = getBikeRecords()
     car_records = getCarRecords()
     background_tasks = []
+    
     kafka_producer = confluent_kafka.Producer(
-        {"bootstrap.servers": "localhost:9092", "client.id": "producer"}
+        {"bootstrap.servers": kafka_url, "client.id": "producer"}
     )
     print("Sending bike records")
     bikeStream(bike_records, background_tasks, kafka_producer)
